@@ -1,0 +1,992 @@
+Started by user Sabarivasan Vadivazhagan (MS/EKI1-XC)
+Replayed #3091
+Resume disabled by user, switching to high-performance, low-durability mode.
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on 10.169.41.143_METRICS_UPDATE in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential 10.47.194.90_VM
+Cloning the remote Git repository
+Cloning repository ssh://rbcm-gerrit.de.bosch.com:29418/projects/dai_civic/dai_civic_metricsnow/
+ > git init /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA # timeout=10
+Fetching upstream changes from ssh://rbcm-gerrit.de.bosch.com:29418/projects/dai_civic/dai_civic_metricsnow/
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.5'
+using GIT_ASKPASS to set credentials 10.47.194.90_VM
+ > git fetch --tags --force --progress -- ssh://rbcm-gerrit.de.bosch.com:29418/projects/dai_civic/dai_civic_metricsnow/ +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 19dfc745e5826469d2881ec41426fa7fb6400853 (origin/honda_cdc)
+Commit message: "coverity stage added to jenkinsfile"
+ > git config remote.origin.url ssh://rbcm-gerrit.de.bosch.com:29418/projects/dai_civic/dai_civic_metricsnow/ # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse origin/honda_cdc^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 19dfc745e5826469d2881ec41426fa7fb6400853 # timeout=10
+ > git rev-list --no-walk 19dfc745e5826469d2881ec41426fa7fb6400853 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Install Depentency)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $PASSWD
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [PASSWD]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ export https_proxy=http://ekd5cob:****@rb-proxy-apac.bosch.com:8080
++ https_proxy=http://ekd5cob:****@rb-proxy-apac.bosch.com:8080
++ export http_proxy=http://ekd5cob:****@rb-proxy-apac.bosch.com:8080
++ http_proxy=http://ekd5cob:****@rb-proxy-apac.bosch.com:8080
++ '[' -d venv ']'
++ pip3 install virtualenv
+Requirement already satisfied: virtualenv in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages
+Requirement already satisfied: importlib-metadata>=4.8.3; python_version < "3.8" in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from virtualenv)
+Requirement already satisfied: importlib-resources>=5.4; python_version < "3.7" in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from virtualenv)
+Requirement already satisfied: distlib<1,>=0.3.6 in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from virtualenv)
+Requirement already satisfied: platformdirs<3,>=2.4 in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from virtualenv)
+Requirement already satisfied: filelock<4,>=3.4.1 in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from virtualenv)
+Requirement already satisfied: zipp>=0.5 in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from importlib-metadata>=4.8.3; python_version < "3.8"->virtualenv)
+Requirement already satisfied: typing-extensions>=3.6.4; python_version < "3.8" in /net/cobvm00082/fs0/ekd5cob/.local/lib/python3.6/site-packages (from importlib-metadata>=4.8.3; python_version < "3.8"->virtualenv)
++ python3 -m virtualenv --python=/usr/bin/python3 venv
+created virtual environment CPython3.6.8.final.0-64 in 154ms
+  creator CPython3Posix(dest=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/net/cobvm00082/fs0/ekd5cob/.local/share/virtualenv)
+    added seed packages: pip==21.3.1, setuptools==59.6.0, wheel==0.37.1
+  activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-f3641f89/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ pip3 install -r requirements.txt
+Collecting artifactory
+  Using cached artifactory-0.1.17-py3-none-any.whl
+Collecting asgiref
+  Using cached asgiref-3.4.1-py3-none-any.whl (25 kB)
+Collecting argparse
+  Using cached argparse-1.4.0-py2.py3-none-any.whl (23 kB)
+Collecting beautifulsoup4
+  Using cached beautifulsoup4-4.12.3-py3-none-any.whl (147 kB)
+Collecting certifi
+  Using cached certifi-2025.4.26-py3-none-any.whl (159 kB)
+Collecting charset-normalizer
+  Using cached charset_normalizer-3.0.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (162 kB)
+Collecting colorama
+  Using cached colorama-0.4.5-py2.py3-none-any.whl (16 kB)
+Collecting dbbot-sqlalchemy
+  Using cached dbbot_sqlalchemy-0.2-py3-none-any.whl
+Collecting Django
+  Using cached Django-3.2.25-py3-none-any.whl (7.9 MB)
+Collecting django-click
+  Using cached django_click-2.4.1-py2.py3-none-any.whl (7.3 kB)
+Collecting et-xmlfile
+  Using cached et_xmlfile-1.1.0-py3-none-any.whl (4.7 kB)
+Collecting greenlet
+  Using cached greenlet-2.0.2-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (564 kB)
+Collecting idna
+  Using cached idna-3.10-py3-none-any.whl (70 kB)
+Collecting influxdb
+  Using cached influxdb-5.3.2-py2.py3-none-any.whl (79 kB)
+Collecting lxml
+  Using cached lxml-5.4.0-cp36-cp36m-manylinux_2_28_x86_64.whl (4.8 MB)
+Collecting msgpack
+  Using cached msgpack-1.0.5-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (300 kB)
+Collecting mysqlclient
+  Using cached mysqlclient-2.1.1-cp36-cp36m-linux_x86_64.whl
+Collecting numpy
+  Using cached numpy-1.19.5-cp36-cp36m-manylinux2010_x86_64.whl (14.8 MB)
+Collecting openpyxl
+  Using cached openpyxl-3.1.3-py2.py3-none-any.whl (251 kB)
+Collecting pandas
+  Using cached pandas-1.1.5-cp36-cp36m-manylinux1_x86_64.whl (9.5 MB)
+Collecting pathlib
+  Using cached pathlib-1.0.1-py3-none-any.whl (14 kB)
+Collecting pbr
+  Using cached pbr-7.1.1-py2.py3-none-any.whl (136 kB)
+Collecting progress
+  Using cached progress-1.6.1-py3-none-any.whl (9.8 kB)
+Collecting pygerrit2
+  Using cached pygerrit2-2.0.15-py3-none-any.whl
+Collecting python-dateutil
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Collecting pytz
+  Using cached pytz-2026.3.post1-py2.py3-none-any.whl (508 kB)
+Collecting requests
+  Using cached requests-2.27.1-py2.py3-none-any.whl (63 kB)
+Collecting robotframework
+  Using cached robotframework-6.1.1-py3-none-any.whl (699 kB)
+Collecting six
+  Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Collecting soupsieve
+  Using cached soupsieve-2.3.2.post1-py3-none-any.whl (37 kB)
+Collecting SQLAlchemy
+  Using cached SQLAlchemy-1.4.54-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.6 MB)
+Collecting sqlparse
+  Using cached sqlparse-0.4.4-py3-none-any.whl (41 kB)
+Collecting urllib3
+  Using cached urllib3-1.26.20-py2.py3-none-any.whl (144 kB)
+Collecting unidecode
+  Using cached Unidecode-1.3.8-py3-none-any.whl (235 kB)
+Collecting jira
+  Using cached jira-3.2.0-py3-none-any.whl (69 kB)
+Collecting django-bulk-update
+  Using cached django_bulk_update-2.2.0-py2.py3-none-any.whl (19 kB)
+Collecting django-bulk-update-or-create
+  Using cached django_bulk_update_or_create-0.3.0-py3-none-any.whl (7.5 kB)
+Collecting flask
+  Using cached Flask-2.0.3-py3-none-any.whl (95 kB)
+Collecting configparser
+  Using cached configparser-5.2.0-py3-none-any.whl (19 kB)
+Collecting python-gitlab
+  Using cached python_gitlab-2.10.1-py3-none-any.whl (197 kB)
+Collecting mysql-connector-python
+  Using cached mysql_connector_python-8.0.33-py2.py3-none-any.whl (390 kB)
+Collecting pyyaml
+  Using cached PyYAML-6.0.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (677 kB)
+Collecting typing-extensions
+  Using cached typing_extensions-4.1.1-py3-none-any.whl (26 kB)
+Collecting click>=7.1
+  Using cached click-8.0.4-py3-none-any.whl (97 kB)
+Requirement already satisfied: setuptools in ./venv/lib/python3.6/site-packages (from pbr->-r requirements.txt (line 22)) (59.6.0)
+Collecting charset-normalizer
+  Using cached charset_normalizer-2.0.12-py3-none-any.whl (39 kB)
+Collecting importlib-metadata
+  Using cached importlib_metadata-4.8.3-py3-none-any.whl (17 kB)
+Collecting requests-toolbelt
+  Using cached requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+Collecting keyring
+  Using cached keyring-23.4.1-py3-none-any.whl (33 kB)
+Collecting requests-oauthlib>=1.1.0
+  Using cached requests_oauthlib-2.0.0-py2.py3-none-any.whl (24 kB)
+Collecting defusedxml
+  Using cached defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+Collecting Jinja2>=3.0
+  Using cached Jinja2-3.0.3-py3-none-any.whl (133 kB)
+Collecting itsdangerous>=2.0
+  Using cached itsdangerous-2.0.1-py3-none-any.whl (18 kB)
+Collecting Werkzeug>=2.0
+  Using cached Werkzeug-2.0.3-py3-none-any.whl (289 kB)
+Collecting protobuf<=3.20.3,>=3.11.0
+  Using cached protobuf-3.19.6-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.1 MB)
+Collecting MarkupSafe>=2.0
+  Using cached MarkupSafe-2.0.1-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl (30 kB)
+Collecting oauthlib>=3.0.0
+  Using cached oauthlib-3.2.2-py3-none-any.whl (151 kB)
+Collecting dataclasses
+  Using cached dataclasses-0.8-py3-none-any.whl (19 kB)
+Collecting zipp>=0.5
+  Using cached zipp-3.6.0-py3-none-any.whl (5.3 kB)
+Collecting SecretStorage>=3.2
+  Using cached SecretStorage-3.3.3-py3-none-any.whl (15 kB)
+Collecting jeepney>=0.4.2
+  Using cached jeepney-0.7.1-py3-none-any.whl (54 kB)
+Collecting cryptography>=2.0
+  Using cached cryptography-40.0.2-cp36-abi3-manylinux_2_28_x86_64.whl (3.7 MB)
+Collecting cffi>=1.12
+  Using cached cffi-1.15.1-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (402 kB)
+Collecting pycparser
+  Using cached pycparser-2.21-py2.py3-none-any.whl (118 kB)
+Installing collected packages: pycparser, cffi, zipp, urllib3, typing-extensions, jeepney, idna, cryptography, charset-normalizer, certifi, sqlparse, six, SecretStorage, requests, pytz, oauthlib, MarkupSafe, importlib-metadata, greenlet, dataclasses, asgiref, Werkzeug, SQLAlchemy, soupsieve, robotframework, requests-toolbelt, requests-oauthlib, python-dateutil, protobuf, pbr, pathlib, numpy, msgpack, keyring, Jinja2, itsdangerous, et-xmlfile, Django, defusedxml, click, unidecode, pyyaml, python-gitlab, pygerrit2, progress, pandas, openpyxl, mysqlclient, mysql-connector-python, lxml, jira, influxdb, flask, django-click, django-bulk-update-or-create, django-bulk-update, dbbot-sqlalchemy, configparser, colorama, beautifulsoup4, artifactory, argparse
+Successfully installed Django-3.2.25 Jinja2-3.0.3 MarkupSafe-2.0.1 SQLAlchemy-1.4.54 SecretStorage-3.3.3 Werkzeug-2.0.3 argparse-1.4.0 artifactory-0.1.17 asgiref-3.4.1 beautifulsoup4-4.12.3 certifi-2025.4.26 cffi-1.15.1 charset-normalizer-2.0.12 click-8.0.4 colorama-0.4.5 configparser-5.2.0 cryptography-40.0.2 dataclasses-0.8 dbbot-sqlalchemy-0.2 defusedxml-0.7.1 django-bulk-update-2.2.0 django-bulk-update-or-create-0.3.0 django-click-2.4.1 et-xmlfile-1.1.0 flask-2.0.3 greenlet-2.0.2 idna-3.10 importlib-metadata-4.8.3 influxdb-5.3.2 itsdangerous-2.0.1 jeepney-0.7.1 jira-3.2.0 keyring-23.4.1 lxml-5.4.0 msgpack-1.0.5 mysql-connector-python-8.0.33 mysqlclient-2.1.1 numpy-1.19.5 oauthlib-3.2.2 openpyxl-3.1.3 pandas-1.1.5 pathlib-1.0.1 pbr-7.1.1 progress-1.6.1 protobuf-3.19.6 pycparser-2.21 pygerrit2-2.0.15 python-dateutil-2.9.0.post0 python-gitlab-2.10.1 pytz-2026.3.post1 pyyaml-6.0.1 requests-2.27.1 requests-oauthlib-2.0.0 requests-toolbelt-1.0.0 robotframework-6.1.1 six-1.17.0 soupsieve-2.3.2.post1 sqlparse-0.4.4 typing-extensions-4.1.1 unidecode-1.3.8 urllib3-1.26.20 zipp-3.6.0
++ deactivate
++ unset -f pydoc
++ '[' -z _ ']'
++ PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
++ export PATH
++ unset _OLD_VIRTUAL_PATH
++ '[' -z '' ']'
++ hash -r
++ '[' -z _ ']'
++ PS1=
++ export PS1
++ unset _OLD_VIRTUAL_PS1
++ unset VIRTUAL_ENV
++ '[' '!' '' = nondestructive ']'
++ unset -f deactivate
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token, password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-6022cd7f/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** --jenkins_token **** build-metric
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Compiler warning Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token, password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-9edbf98d/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** --jenkins_token **** compiler-metric
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (UT Count Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token, password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-5870cc98/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** --jenkins_token **** ut-count
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (UT Coverage Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token, password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-266a54dd/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** --jenkins_token **** ut-coverage
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Integration test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token, password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-e43a083a/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** --jenkins_token **** integration-test
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Gerrit Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $gerrit_password
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [gerrit_password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-ff11f666/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username LYI1COB --password **** gerrit-metric
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SBOM Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-51c9ee15/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --jenkins_token **** sbom-metric
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Coverity Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [password]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-6c5175b0/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --password **** coverity
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Memory Profiling Metrics)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $password or $jenkins_token
+[Pipeline] {
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [jenkins_token]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ . ./venv/bin/activate
+++ '[' ./venv/bin/activate = /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA@tmp/durable-48d86de4/script.sh.copy ']'
+++ deactivate nondestructive
+++ unset -f pydoc
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ hash -r
+++ '[' -z '' ']'
+++ unset VIRTUAL_ENV
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ PATH=/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/bin:/net/cobvm00082/fs0/ekd5cob/bin:/net/cobvm00082/fs0/ekd5cob/.nvm/versions/node/v20.9.0/bin:/net/cobvm00082/fs0/ekd5cob/.local/bin:/net/cobvm00082/fs0/ekd5cob/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin:/net/cobvm00082/fs0/ekd5cob/go/bin
+++ export PATH
+++ '[' -z '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ '[' x '!=' x ']'
++++ basename /net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv
+++ PS1='(venv) '
+++ export PS1
+++ alias pydoc
+++ true
+++ hash -r
++ python3 manage.py cli --username rdm5cob --jenkins_token **** static-profiling
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    main()
+  File "manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+    utility.execute()
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 413, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 257, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/venv/lib/python3.6/site-packages/django/core/management/__init__.py", line 39, in load_command_class
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+  File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/management/commands/cli.py", line 11, in <module>
+    from cli.modules import StaticProfilingMetrics
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 30, in <module>
+    class StaticProfilingMetrics:
+  File "/net/cobvm00082/fs0/ekd5cob/workspace/143/workspace/METRICS_UPDATE_FRQ_HONDA/cli/modules/StaticProfilingMetrics.py", line 46, in StaticProfilingMetrics
+    def _classify_region(self, region_name: str) -> tuple[str, str]:
+TypeError: 'type' object is not subscriptable
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] echo
+script returned exit code 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline completed!!
+[Pipeline] echo
+[Build Metrics:FAILURE, Compiler warning Metrics:FAILURE, UT Count Metrics:FAILURE, UT Coverage Metrics:FAILURE, Integration test:FAILURE, Gerrit Metrics:FAILURE, SBOM Metrics:FAILURE, Coverity Metrics:FAILURE, Memory Profiling Metrics:FAILURE]
+[Pipeline] script
+[Pipeline] {
+[Pipeline] emailext
+Sending email to: deivasigamani.ramya@in.bosch.com pjv5cob@bosch.com
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: FAILURE
