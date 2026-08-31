@@ -1,0 +1,23 @@
+pipeline{
+    agent any
+    stages{
+        stage('simuate the build failure'){
+            steps{
+                echo 'Running the model...'
+                sh 'exit 1'
+            }
+        }
+    }
+    post{
+        failure{
+            script{
+                def payload = """{
+                    "build_id": "${BUILD_NUMBER}",
+                    "job_name": "${JOB_NAME}",
+                    "log_url": "${BUILD_URL}consoleText",
+                    "git_author_email": "test_dev@example.com"
+                }"""
+            }
+        }
+    }
+}

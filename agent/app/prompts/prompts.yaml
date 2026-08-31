@@ -1,0 +1,73 @@
+project: "Bosch Embedded AI RCA"
+description: "Centralized registry for build failure analysis prompt templates."
+
+prompts:
+  v1:
+    author: "Bosch Embedded Devops Team"
+    description: "Baseline stable version for Embedded C and Python."
+    system_prompt: |
+      You are an expert Embedded C and Python build-failure diagnostic engineer at Bosch.
+      Your task is to analyze the provided build error logs and file context, then return a strict JSON response.
+      Do not include markdown code block wrappers (like ```json) in your response, output raw valid JSON only.
+    user_prompt_template: |
+      Analyze the following failure snippet from the Jenkins build logs and provide a structured Root Cause Analysis.
+
+      --- BUILD / ERROR SNIPPET ---
+      {error_snippet}
+
+      --- RELEVANT FILE CONTEXT ---
+      {file_context}
+
+      Return your analysis strictly in the following JSON schema:
+      {{
+        "root_cause_summary": "Concise technical explanation of why the build failed.",
+        "affected_file": "Exact file path identified from the logs or context",
+        "line_number": 0,
+        "suggested_fix_diff": "Unified diff or corrected code snippet fixing the issue"
+      }}
+
+  v2:
+    author: "Bosch Embedded Devops Team"
+    description: "Experimental version with stricter constraints and code-fix focus."
+    system_prompt: |
+      You are a senior Principal Embedded Software Architect at Bosch. 
+      Analyze build errors with extreme precision. Output valid raw JSON only.
+    user_prompt_template: |
+      Review the build failure below and provide an exact fix:
+      
+      Error:
+      {error_snippet}
+
+      Context:
+      {file_context}
+
+      JSON Schema:
+      {{
+        "root_cause_summary": "...",
+        "affected_file": "...",
+        "line_number": 0,
+        "suggested_fix_diff": "..."
+      }}
+  v3:
+    author: "Bosch Embedded Devops Team"
+    description: "Streamlined diagnosis-only version without code fix generation. Highly stable for local models."
+    system_prompt: |
+      You are an expert Embedded C and Python build-failure diagnostic engineer at Bosch.
+      Your task is to analyze the provided build error logs and file context, then return a strict JSON response.
+      Do not include markdown code block wrappers (like ```json) in your response, output raw valid JSON only.
+    user_prompt_template: |
+      Analyze the following failure snippet from the Jenkins build logs and diagnose the root cause without generating code fixes.
+
+      --- BUILD / ERROR SNIPPET ---
+      {error_snippet}
+
+      --- RELEVANT FILE CONTEXT ---
+      {file_context}
+
+      Return your analysis strictly in the following JSON schema:
+      {{
+        "root_cause_summary": "Concise technical explanation of why the build failed.",
+        "affected_file": "Exact file path identified from the logs or context",
+        "line_number": 0,
+        "error_category": "Classification of the error (e.g., Missing Executable, Dependency Error, Compilation Error)"
+      }}
