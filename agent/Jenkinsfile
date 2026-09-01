@@ -11,13 +11,12 @@ pipeline{
     post{
         failure{
             script{
-                // Replace localhost:8080 in BUILD_URL with 172.17.0.1:8080 so FastAPI can reach Jenkins
-                def formattedLogUrl = "${BUILD_URL}".replace("localhost:8080", "172.17.0.1:8080") + "consoleText"
+               def internalLogUrl = "http://172.17.0.1:8080/job/${JOB_NAME}/${BUILD_NUMBER}/consoleText"
 
                 def payload = """{
                     "build_id": "${BUILD_NUMBER}",
                     "job_name": "${JOB_NAME}",
-                    "log_url": "${formattedLogUrl}",
+                    "log_url": "${internalLogUrl}",
                     "git_author_email": "test_dev@example.com"
                 }"""
 
