@@ -17,6 +17,11 @@ pipeline{
                     "log_url": "${BUILD_URL}consoleText",
                     "git_author_email": "test_dev@example.com"
                 }"""
+                sh """
+                    curl -X POST "http://172.17.0.1:8000/api/v1/analyse" \\
+                         -H "Content-Type: application/json" \\
+                         -d '${payload}'
+                """
             }
         }
     }
