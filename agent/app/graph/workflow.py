@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, END
 from app.graph.state import AgentState
 from app.graph.nodes.log_parser_node import parse_log_node
 from app.graph.nodes.rca_node import classify_rca_node
-
+from app.graph.nodes.log_parser_node import parse_log_node
 workflow = StateGraph(AgentState)
 
 workflow.add_node("parse_log", parse_log_node)
