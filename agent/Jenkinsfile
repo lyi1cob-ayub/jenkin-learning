@@ -2,78 +2,46 @@ pipeline {
     agent any
 
     stages {
-        stage('Network Test') {
+
+        stage('Network Diagnostics') {
             steps {
                 sh '''
-                curl -I https://google.com
-                curl -I https://github.com
-                curl -I https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev
+                    echo "======================================"
+                    echo "NETWORK DIAGNOSTICS"
+                    echo "======================================"
+
+                    echo
+                    echo "=== DNS Test ==="
+                    nslookup github.com || true
+
+                    echo
+                    echo "=== Internet Connectivity ==="
+                    curl -I https://google.com || true
+
+                    echo
+                    echo "=== GitHub Connectivity ==="
+                    curl -I https://github.com || true
+
+                    echo
+                    echo "=== RCA Agent Connectivity ==="
+                    curl -I https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev || true
+
+                    echo
+                    echo "=== Detailed RCA Agent Request ==="
+                    curl -v https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev || true
+
+                    echo
+                    echo "=== Route Information ==="
+                    ip route || true
+
+                    echo
+                    echo "=== Host Information ==="
+                    hostname || true
+
+                    echo
+                    echo "=== Force Failure for RCA Testing ==="
+                    exit 1
                 '''
-            }
-
-        }
-        stage('Simulate Failure Scenario') {
-            steps {
-                script {
-                    // --- SCENARIO 1: SQLite Database Lock (Traceback) ---
-                    echo "Running simulation: SQLite Database Locked..."
-                    sh '''
-                        echo "2026-08-18 14:10:01,220 INFO     [DB-Pool] Acquiring database connection from connection pool..."
-                        echo "2026-08-18 14:10:01,250 INFO     [SQL] BEGIN TRANSACTION (id=9921)"
-                        echo "2026-08-18 14:10:01,310 ERROR    [SQLAlchemy] OperationalError: (sqlite3.OperationalError) database is locked"
-                        echo "2026-08-18 14:10:01,312 ERROR    Traceback (most recent call last):"
-                        echo "  File \\"/opt/app/database/repository.py\\", line 45, in save_build_metrics"
-                        echo "    session.commit()"
-                        echo "  File \\"/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/session.py\\", line 1435, in commit"
-                        echo "    self._transaction.commit()"
-                        echo "sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked"
-                        echo "2026-08-18 14:10:01,315 WARNING  [DB-Pool] Rolling back active transaction due to exception."
-                        echo "2026-08-18 14:10:01,320 INFO     [DB-Pool] Connection released back to pool."
-                        exit 1
-                    '''
-
-                    // --- SCENARIO 2: PostgreSQL Connection Timeout ---
-                    /*
-                    echo "Running simulation: PostgreSQL Connection Timeout..."
-                    sh '''
-                        echo "2026-08-18 14:15:02,110 INFO     [DB-Pool] Initializing connection to database host 'db.internal.production:5432'..."
-                        echo "2026-08-18 14:15:12,125 ERROR    [psycopg2] OperationalError: could not connect to server: Connection timed out"
-                        echo "2026-08-18 14:15:12,128 ERROR    Traceback (most recent call last):"
-                        echo "  File \\"/opt/app/services/user_service.py\\", line 82, in authenticate_user"
-                        echo "    user = self.db.query(UserModel).filter_by(email=email).first()"
-                        echo "sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection timed out"
-                        exit 1
-                    '''
-                    */
-
-                    // --- SCENARIO 3: Pytest Assertion Error ---
-                    /*
-                    echo "Running simulation: Pytest Assertion Failure..."
-                    sh '''
-                        echo "2026-08-18 14:20:05,400 INFO     [TestRunner] Executing test suite: tests/api/test_payment.py"
-                        echo "2026-08-18 14:20:05,822 ERROR    [TestRunner] FAIL: test_process_checkout_payment_gateway_down"
-                        echo "2026-08-18 14:20:05,825 ERROR    Traceback (most recent call last):"
-                        echo "  File \\"/opt/app/tests/api/test_payment.py\\", line 34, in test_process_checkout_payment_gateway_down"
-                        echo "    assert response.status_code == 503"
-                        echo "AssertionError: assert 500 == 503"
-                        exit 1
-                    '''
-                    */
-
-                    // --- SCENARIO 4: Missing Python Dependency ---
-                    /*
-                    echo "Running simulation: Missing Dependency..."
-                    sh '''
-                        echo "2026-08-18 14:25:30,010 INFO     [AppLoader] Loading application routes and models..."
-                        echo "2026-08-18 14:25:30,105 ERROR    [AppLoader] Failed to import module 'app.main'"
-                        echo "2026-08-18 14:25:30,108 ERROR    Traceback (most recent call last):"
-                        echo "  File \\"/opt/app/main.py\\", line 4, in <module>"
-                        echo "    import redis.asyncio as redis"
-                        echo "ModuleNotFoundError: No module named 'redis'"
-                        exit 1
-                    '''
-                    */
-                }
             }
         }
     }
@@ -81,21 +49,23 @@ pipeline {
     post {
         failure {
             script {
-                def internalLogUrl = "https://mbag-civic-buildinfra.bosch.com:8443/job/${JOB_NAME}/${BUILD_NUMBER}/consoleText"
+
+                def logUrl = "${BUILD_URL}consoleText"
 
                 def payload = """{
                     "build_id": "${BUILD_NUMBER}",
                     "job_name": "${JOB_NAME}",
-                    "log_url": "${internalLogUrl}",
+                    "log_url": "${logUrl}",
                     "git_author_email": "test_dev@example.com"
                 }"""
 
-                echo "Triggering FastAPI RCA webhook for build ${BUILD_NUMBER}..."
-                
+                echo "Triggering RCA Agent..."
+
                 sh """
-                    curl -X POST "https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev/api/v1/analyse" \\
-                         -H "Content-Type: application/json" \\
-                         -d '${payload}'
+                    curl -X POST \
+                    'https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev/api/v1/analyse' \
+                    -H 'Content-Type: application/json' \
+                    -d '${payload}'
                 """
             }
         }
