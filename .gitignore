@@ -1,14 +1,24 @@
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
 
+# Environments
 myenv/
-*.log
-.DS_Store
-<<<<<<< HEAD
+venv/
+.env
+*.env
+agent/.env
 
-=======
-.ref
->>>>>>> 8992cea (added the configuration file and workfloe setup)
-version_1/
+# Logs
+*.log
+
+# Temporary Jenkins logs
+tmp/
+tmp/Jenkins_raw_logs/
+
+# Reference artifacts
+.ref/
+.ref/**
+
+# Generated images
+workflow_graph.png
