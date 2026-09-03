@@ -6,44 +6,18 @@ pipeline {
         stage('Network Diagnostics') {
             steps {
                 sh '''
-                    echo "======================================"
-                    echo "NETWORK DIAGNOSTICS"
-                    echo "======================================"
+                    echo "=== Proxy Variables ==="
+                    env | grep -i proxy || true
 
-                    echo
-                    echo "=== DNS Test ==="
-                    nslookup github.com || true
+                    echo "=== Git Proxy ==="
+                    git config --get http.proxy || true
 
-                    echo
-                    echo "=== Internet Connectivity ==="
-                    curl -I https://google.com || true
-
-                    echo
-                    echo "=== GitHub Connectivity ==="
-                    curl -I https://github.com || true
-
-                    echo
-                    echo "=== RCA Agent Connectivity ==="
-                    curl -I https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev || true
-
-                    echo
-                    echo "=== Detailed RCA Agent Request ==="
-                    curl -v https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev || true
-
-                    echo
-                    echo "=== Route Information ==="
-                    ip route || true
-
-                    echo
-                    echo "=== Host Information ==="
-                    hostname || true
-
-                    echo
-                    echo "=== Force Failure for RCA Testing ==="
-                    exit 1
+                    echo "=== Curl Through Proxy ==="
+                    curl -x http://10.47.203.33:3128 -I https://github.com || true
                 '''
             }
         }
+
     }
 
     post {
