@@ -1,7 +1,8 @@
 import os
 import asyncio
 import httpx
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+import aiofiles
+from fastapi import APIRouter, HTTPException, status
 from app.models.models import JenkinsWebhookPayload
 from app.graph.state import AgentState
 from app.graph.workflow import app as langgraph_app
@@ -10,47 +11,56 @@ from loguru import logger
 
 router = APIRouter(prefix="/api/v1", tags=["Jenkins Webhook"])
 
-Log_Storage_Dir = "../tmp/Jenkins_raw_logs"
-os.makedirs(Log_Storage_Dir, exist_ok=True)
-JENKINS_USER = settings.jenkins_user
-JENKINS_TOKEN = settings.jenkins_token
+# Absolute path resolution ensures consistency regardless of execution directory
+LOG_STORAGE_DIR = os.path.abspath("./tmp/jenkins_raw_logs")
+os.makedirs(LOG_STORAGE_DIR, exist_ok=True)
+
+# Maintain strong references to running background tasks to prevent garbage collection
+background_tasks_set = set()
+
 
 async def run_agent_workflow(initial_state: AgentState):
-    """Wrapper function to execute LangGraph asynchronously and log errors."""
+    """Executes the LangGraph RCA pipeline asynchronously and logs state updates."""
+    build_id = initial_state.get("build_id")
     try:
-        logger.info(f"Starting LangGraph workflow for build {initial_state['build_id']}...")
+        logger.info(f"Starting LangGraph RCA workflow for build: {build_id}")
         final_state = await langgraph_app.ainvoke(initial_state)
-        logger.info(f"LangGraph execution finished for build {initial_state['build_id']}.")
+        logger.info(f"LangGraph execution finished for build: {build_id}")
         logger.info(f"Final RCA Result: {final_state.get('rca_result')}")
     except Exception as e:
-        logger.error(f"LangGraph execution failed for build {initial_state['build_id']}: {str(e)}")
+        logger.error(f"LangGraph execution failed for build {build_id}: {str(e)}")
 
-@router.post("/analyse")
-async def receive_jenkins_webhook(payload: JenkinsWebhookPayload, background_tasks: BackgroundTasks):
-    print(f"--> Received log_url: {payload.log_url}")
-    print(f"--> Authenticating with user: {JENKINS_USER}")
-    
+
+@router.post("/analyse", status_code=status.HTTP_202_ACCEPTED)
+async def receive_jenkins_webhook(payload: JenkinsWebhookPayload):
+    """
+    Receives Jenkins failure webhooks, streams logs directly to disk in O(1) RAM,
+    and queues asynchronous LangGraph RCA processing.
+    """
+    logger.info(f"Received webhook for job '{payload.job_name}' build #{payload.build_id}")
+
+    log_file_name = f"{payload.job_name}_build_{payload.build_id}.log"
+    saved_log_path = os.path.join(LOG_STORAGE_DIR, log_file_name)
+
+    auth = (settings.jenkins_user, settings.jenkins_token) if settings.jenkins_user and settings.jenkins_token else None
+
     try:
-        auth = (JENKINS_USER, JENKINS_TOKEN) if JENKINS_USER and JENKINS_TOKEN else None
-        
-        # Async HTTP client prevents Uvicorn event loop freezing
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(payload.log_url, auth=auth)
-            
-        print(f"--> Jenkins Response Code: {response.status_code}")
-        
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Failed to fetch log. Status: {response.status_code}, Body: {response.text[:200]}"
-            )
+        # Chunked streaming prevents high memory usage on large log files
+        async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+            async with client.stream("GET", payload.log_url, auth=auth) as response:
+                if response.status_code != status.HTTP_200_OK:
+                    logger.error(f"Failed to fetch Jenkins log. HTTP {response.status_code}")
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Failed to fetch Jenkins log. HTTP {response.status_code}"
+                    )
 
-        raw_log_text = response.text
-        log_file_name = f"{payload.job_name}_build_{payload.build_id}.log"
-        saved_log_path = os.path.join(Log_Storage_Dir, log_file_name)
+                # Asynchronous file writing prevents blocking the event loop
+                async with aiofiles.open(saved_log_path, "wb") as file:
+                    async for chunk in response.aiter_bytes(chunk_size=65536):
+                        await file.write(chunk)
 
-        with open(saved_log_path, "w", encoding="utf-8") as file:
-            file.write(raw_log_text)
+        logger.info(f"Successfully streamed raw log to disk: {saved_log_path}")
 
         initial_state: AgentState = {
             "build_id": payload.build_id,
@@ -68,13 +78,22 @@ async def receive_jenkins_webhook(payload: JenkinsWebhookPayload, background_tas
             "error_message": None,
         }
 
-        # Queue async task safely without blocking background workers
-        asyncio.create_task(run_agent_workflow(initial_state))
+        # Queue background task safely with GC tracking
+        task = asyncio.create_task(run_agent_workflow(initial_state))
+        background_tasks_set.add(task)
+        task.add_done_callback(background_tasks_set.discard)
 
         return {
             "status": "Accepted",
             "message": "Webhook received and agent execution queued",
             "raw_log_path": saved_log_path
         }
+
+    except HTTPException as http_ex:
+        raise http_ex
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"webhook handling error: {str(e)}")
+        logger.error(f"Error handling webhook payload: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Webhook handling error: {str(e)}"
+        )

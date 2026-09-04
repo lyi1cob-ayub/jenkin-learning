@@ -2,23 +2,23 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Network Diagnostics') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                    echo "=== Proxy Variables ==="
-                    env | grep -i proxy || true
-
-                    echo "=== Git Proxy ==="
-                    git config --get http.proxy || true
-
-                    echo "=== Curl Through Proxy ==="
-                    curl -x http://10.47.203.33:3128 -I https://github.com || true
-                    exit 1
+                    python3 -m pip install --upgrade pip
+                    pip install pytest
                 '''
             }
         }
 
+        stage('Run Unit Tests') {
+            steps {
+                sh '''
+                    echo "=== Running Pytest Suite ==="
+                    pytest test_app.py -v
+                '''
+            }
+        }
     }
 
     post {
@@ -31,7 +31,7 @@ pipeline {
                 //     "build_id": "${BUILD_NUMBER}",
                 //     "job_name": "${JOB_NAME}",
                 //     "log_url": "${logUrl}",
-                //     "git_author_email": "test_dev@example.com"
+                //     "git_author_email": "fixed-term.Ayub.Alikhan@in.bosch.com"
                 // }"""
 
                 // echo "Triggering RCA Agent..."
