@@ -24,23 +24,38 @@ pipeline {
         failure {
             script {
 
-                def logUrl = "${BUILD_URL}consoleText"
+                // def logUrl = "${BUILD_URL}consoleText"
+
+                // def payload = """{
+                //     "build_id": "${BUILD_NUMBER}",
+                //     "job_name": "${JOB_NAME}",
+                //     "log_url": "${logUrl}",
+                //     "git_author_email": "test_dev@example.com"
+                // }"""
+
+                // echo "Triggering RCA Agent..."
+
+                // sh """
+                //     curl -X POST \
+                //     'https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev/api/v1/analyse' \
+                //     -H 'Content-Type: application/json' \
+                //     -d '${payload}'
+                // """
+                def internalLogUrl = "http://172.17.0.1:8081/job/${JOB_NAME}/${BUILD_NUMBER}/consoleText"
+
 
                 def payload = """{
                     "build_id": "${BUILD_NUMBER}",
                     "job_name": "${JOB_NAME}",
-                    "log_url": "${logUrl}",
+                    "log_url": "${internalLogUrl}",
                     "git_author_email": "test_dev@example.com"
                 }"""
-
-                echo "Triggering RCA Agent..."
-
+                echo "Triggering FastAPI RCA webhook for build ${BUILD_NUMBER}..."
                 sh """
-                    curl -X POST \
-                    'https://obscure-space-memory-gx5q9p6r764v39wrr-8000.app.github.dev/api/v1/analyse' \
-                    -H 'Content-Type: application/json' \
-                    -d '${payload}'
-                """
+                    curl -X POST "http://172.17.0.1:8000/api/v1/analyse" \\
+                         -H "Content-Type: application/json" \\
+                         -d '${payload}'
+                """ 
             }
         }
     }

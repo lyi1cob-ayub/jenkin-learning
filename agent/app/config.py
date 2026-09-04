@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Base directory pointing to the 'app' directory (/agent/app)
 APP_DIR = Path(__file__).resolve().parent
+ENV_FILE_PATH = APP_DIR.parent / ".env"
 
 class Settings(BaseSettings):
     app_name: str = "Bosch AI RCA agent"
@@ -26,9 +27,12 @@ class Settings(BaseSettings):
     jenkins_token: str = ""
     jenkins_user: str = ""
     teams_webhook_url: str = ""
+    LOG_PARSER_MAX_CONTEXT_LINES: int = 40
+    LOG_PARSER_MAX_TOTAL_CHARS: int = 24000
+    LOG_PARSER_MAX_LINE_LENGTH: int = 2000
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILE_PATH,
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False

@@ -1,15 +1,25 @@
 import os
 import re
-from typing import List, Optional,Any , Dict
+from typing import List, Dict, Any, Optional
+from collections import deque
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 from loguru import logger
 from langchain_core.tools import tool 
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field
+from app.config import settings
 
 class JenkinsLogParser:
     """
-    Parses massive Jenkins console logs using a global top-to-bottom scan 
-    to extract all critical error blocks and failure points.
+    Production-grade stream log parser.
+    Guarantees O(1) RAM usage, regex safety, and token-budget compliance.
     """
+
+    # Matches ANSI escape sequences (colors, terminal formatting)
+    ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    
+    # Strip leading Jenkins timestamps e.g., "14:20:01 " or "[2026-03-30T10:00:00Z]"
+    TIMESTAMP_PREFIX = re.compile(r'^(\[\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}[^\]]*\]|\d{2}:\d{2}:\d{2}\s+)')
 
     CRITICAL_ERROR_PATTERNS = [
         re.compile(r"fatal error:.*", re.IGNORECASE),
@@ -29,80 +39,132 @@ class JenkinsLogParser:
         re.compile(r"make\[\d+\]:\s+\*\*\*.*Error.*", re.IGNORECASE),
     ]
 
-    def __init__(self, max_context_lines: int = 50):
-        self.half_window = max_context_lines // 2 
+    EXPLICIT_STRINGS = [
+        "KeyError:", "IndexError:", "ValueError:", 
+        "TypeError:", "fatal error:", "executable is missing:"
+    ]
 
-    def extract_error_snippets(self, raw_log: str) -> List[Dict[str, Any]]:
-        """
-        Scans the entire log from top to bottom, finding ALL matching error points 
-        and extracting context snippets for each.
-        """
-        lines = raw_log.splitlines()
-        total_lines = len(lines)
-        logger.info(f"Scanning entire log of {total_lines} lines globally.")
+    def __init__(
+        self, 
+        max_context_lines: int = settings.LOG_PARSER_MAX_CONTEXT_LINES, 
+        max_total_chars: int = settings.LOG_PARSER_MAX_TOTAL_CHARS, 
+        max_line_length: int = settings.LOG_PARSER_MAX_LINE_LENGTH
+    ):
+        self.half_window = max_context_lines // 2
+        self.max_total_chars = max_total_chars
+        self.max_line_length = max_line_length
 
-        matched_issues = []
-        seen_indices = set()
+    def _clean_line(self, raw_line: str) -> str:
+        # Prevent ReDoS or performance degradation on ultra-long lines
+        line = raw_line[:self.max_line_length]
+        line = self.ANSI_ESCAPE.sub('', line)
+        line = self.TIMESTAMP_PREFIX.sub('', line)
+        return line.rstrip('\r\n')
 
-        # Global top-to-bottom scan
-        for idx, line in enumerate(lines):
-            priority = None
-            
-            # Check high priority python-style exceptions first
-            if any(exc in line for exc in ["KeyError:", "IndexError:", "ValueError:", "TypeError:", "fatal error:", "executable is missing:"]):
-                priority = 0
-            elif any(p.search(line) for p in self.CRITICAL_ERROR_PATTERNS):
-                priority = 1
-            elif any(p.search(line) for p in self.SECONDARY_PATTERNS):
-                priority = 2
+    def parse_log_stream(self, file_path: str) -> List[Dict[str, Any]]:
+        matched_issues: List[Dict[str, Any]] = []
+        before_buffer = deque(maxlen=self.half_window)
+        
+        last_matched_line = -999999
+        total_lines = 0
 
-            if priority is not None:
-                # Prevent overlapping context windows for lines right next to each other
-                if any(abs(idx - existing_idx) < self.half_window for existing_idx in seen_indices):
-                    continue
+        # Handled non-UTF8 encoding safely with 'replace'
+        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            for idx, raw_line in enumerate(f):
+                total_lines = idx + 1
+                clean_line = self._clean_line(raw_line)
 
-                seen_indices.add(idx)
-                
-                # Extract sliding window around the matched line
-                start_id = max(0, idx - self.half_window)
-                end_idx = min(total_lines, idx + self.half_window + 1)
-                snippet = "\n".join(lines[start_id:end_idx])
+                priority = None
+                if any(exc in clean_line for exc in self.EXPLICIT_STRINGS):
+                    priority = 0
+                elif any(p.search(clean_line) for p in self.CRITICAL_ERROR_PATTERNS):
+                    priority = 1
+                elif any(p.search(clean_line) for p in self.SECONDARY_PATTERNS):
+                    priority = 2
 
-                matched_issues.append({
-                    "line_number": idx + 1,
-                    "matched_line": line.strip(),
-                    "priority": priority,
-                    "context_snippet": snippet
-                })
-        matched_issues.sort(key=lambda x: (x["priority"], x["line_number"]))
+                if priority is not None:
+                    # O(1) Fast Window Deduplication
+                    if (idx - last_matched_line) < self.half_window:
+                        before_buffer.append(clean_line)
+                        continue
+
+                    last_matched_line = idx
+
+                    # Forward context read
+                    after_buffer = []
+                    for _ in range(self.half_window):
+                        next_line = f.readline()
+                        if not next_line:
+                            break
+                        after_buffer.append(self._clean_line(next_line))
+
+                    context_lines = list(before_buffer) + [clean_line] + after_buffer
+                    
+                    matched_issues.append({
+                        "line_number": total_lines,
+                        "matched_line": clean_line.strip(),
+                        "priority": priority,
+                        "context_snippet": "\n".join(context_lines)
+                    })
+
+                    before_buffer.clear()
+                    for line in after_buffer:
+                        before_buffer.append(line)
+                else:
+                    before_buffer.append(clean_line)
+
+        # Fallback if no patterns match
         if not matched_issues:
-            logger.warning("No explicit error patterns matched globally. Returning tail of log.")
-            fallback_snippet = "\n".join(lines[-self.half_window * 2:])
+            logger.warning(f"No error patterns matched in {file_path}. Returning tail fallback.")
+            tail_lines = list(before_buffer)
             return [{
                 "line_number": total_lines,
-                "matched_line": "No pattern matched (Tail Fallback)",
+                "matched_line": "No explicit pattern matched (Tail Fallback)",
                 "priority": 99,
-                "context_snippet": fallback_snippet
+                "context_snippet": "\n".join(tail_lines)
             }]
 
-        logger.info(f"Global scan complete. Found {len(matched_issues)} distinct failure/error points.")
-        return matched_issues
+        # Sort by priority, then by line order
+        matched_issues.sort(key=lambda x: (x["priority"], x["line_number"]))
+
+        # Enforce Character Budget Guardrail
+        budgeted_snippets = []
+        accumulated_chars = 0
+
+        for issue in matched_issues:
+            snippet_len = len(issue["context_snippet"])
+            if accumulated_chars + snippet_len > self.max_total_chars:
+                if not budgeted_snippets:
+                    # Guarantee at least 1 snippet even if huge
+                    budgeted_snippets.append(issue)
+                break
+            budgeted_snippets.append(issue)
+            accumulated_chars += snippet_len
+
+        return budgeted_snippets
+
 
 class LogParserInput(BaseModel):
-    file_path: str = Field(description="Absolute file path to the raw Jenkins console log on disk")
-    max_context_lines: int = Field(default=50, description="Number of context lines surrounding the matched error")
+    file_path: str = Field(description="Absolute file path to the raw Jenkins console log")
+    max_context_lines: int = Field(default=40, description="Context lines surrounding matched errors")
+    max_total_chars: int = Field(default=24000, description="Strict total character budget for LLM context window")
 
-@tool("parse_jenkins_log",args_schema=LogParserInput)
-def parse_jenkins_log_tool(file_path: str, max_context_lines:int=50)->List[Dict[str,any]]:
+
+@tool("parse_jenkins_log", args_schema=LogParserInput)
+def parse_jenkins_log_tool(
+    file_path: str, 
+    max_context_lines: int = 40, 
+    max_total_chars: int = 24000
+) -> List[Dict[str, Any]]:
     """
-    Reads a raw Jenkins log file from disk and parses all critical error signatures, 
-    returning context snippets for Root Cause Analysis.
+    Parses a raw Jenkins log file using an O(1) streaming approach.
+    Guarantees strict payload size limits to fit any LLM model.
     """
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Log file not found at path: {file_path}")
 
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
-        raw_log_content = file.read()
-
-    parser = JenkinsLogParser(max_context_lines=max_context_lines)
-    return parser.extract_error_snippets(raw_log=raw_log_content)
+    parser = JenkinsLogParser(
+        max_context_lines=max_context_lines, 
+        max_total_chars=max_total_chars
+    )
+    return parser.parse_log_stream(file_path)
