@@ -5,13 +5,10 @@ pipeline {
     stages {
         stage('Run Unit Tests') {
             steps {
-                sh '''
-                    echo "=== Running Pytest Suite ==="
-                    # Navigate into agent directory so relative paths resolve correctly
-                    cd agent
-                    export PYTHONPATH=.
-                    pytest app/test_app.py -v
-                '''
+              sh '''
+                echo "=== Running Pytest Suite ==="
+                pytest agent/app/test_app.py -v
+            '''
             }
         }
     }
