@@ -44,7 +44,7 @@ pipeline {
                     "build_id": "${BUILD_NUMBER}",
                     "job_name": "${JOB_NAME}",
                     "log_url": "${internalLogUrl}",
-                    "git_author_email": "test_dev@example.com"
+                    "git_author_email": "fixed-term.Ayub.Alikhan@in.bosch.com"
                 }"""
                 echo "Triggering FastAPI RCA webhook for build ${BUILD_NUMBER}..."
                 sh """
