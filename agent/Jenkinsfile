@@ -9,7 +9,7 @@ pipeline {
                     echo "=== Running Pytest Suite ==="
                     # Navigate into agent directory so relative paths resolve correctly
                     cd agent
-                    export PYTHONPATH=app
+                    export PYTHONPATH=.
                     pytest app/test_app.py -v
                 '''
             }
