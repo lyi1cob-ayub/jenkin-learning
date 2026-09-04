@@ -14,6 +14,7 @@ pipeline {
 
                     echo "=== Curl Through Proxy ==="
                     curl -x http://10.47.203.33:3128 -I https://github.com || true
+                    exit 1
                 '''
             }
         }
