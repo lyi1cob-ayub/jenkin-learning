@@ -1,4 +1,4 @@
-from app import process_user_data
+from .app import process_user_data
 
 def test_process_user_data_success():
     payload = {

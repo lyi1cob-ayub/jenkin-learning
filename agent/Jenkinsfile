@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sh '''
                     echo "=== Running Pytest Suite ==="
-                    pytest test_app.py -v
+                    pytest aap/test_app.py -v
                 '''
             }
         }
