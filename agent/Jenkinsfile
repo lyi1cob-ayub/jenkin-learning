@@ -2,15 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    python3 -m pip install --upgrade pip
-                    pip install pytest
-                '''
-            }
-        }
-
         stage('Run Unit Tests') {
             steps {
                 sh '''
