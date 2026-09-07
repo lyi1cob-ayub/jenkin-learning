@@ -13,12 +13,29 @@ pipeline {
     //     }
     // }
     stages {
-        stage('Simulate Pipeline Failure') {
+        // stage('Simulate Pipeline Failure') {
+        //     steps {
+        //         sh '''
+        //             echo "=== Simulating a Build Failure ==="
+        //             echo "ERROR: Unit test failed on assertion line 42"
+        //             exit 1
+        //         '''
+        //     }
+        // }
+        stage('Simulate Infrastructure Failure') {
             steps {
                 sh '''
-                    echo "=== Simulating a Build Failure ==="
-                    echo "ERROR: Unit test failed on assertion line 42"
-                    exit 1
+                    echo "=== Simulating Infrastructure Failure ==="
+                    echo "Checking system dependencies..."
+                    
+                    # Attempting to call an uninstalled CLI tool to simulate a missing binary/dependency
+                    if ! command -v non_existent_cli_tool &> /dev/null; then
+                        echo "FATAL: Required binary 'non_existent_cli_tool' is missing or not executable on worker node."
+                        echo "ERROR: Infrastructure dependency check failed."
+                        exit 127
+                    fi
+
+                    non_existent_cli_tool --version
                 '''
             }
         }
