@@ -2,17 +2,27 @@ pipeline {
     agent any
 
 
+    // stages {
+    //     stage('Run Unit Tests') {
+    //         steps {
+    //           sh '''
+    //             echo "=== Running Pytest Suite ==="
+    //             pytest agent/app/test_app.py -v
+    //         '''
+    //         }
+    //     }
+    // }
     stages {
-        stage('Run Unit Tests') {
+        stage('Simulate Pipeline Failure') {
             steps {
-              sh '''
-                echo "=== Running Pytest Suite ==="
-                pytest agent/app/test_app.py -v
-            '''
+                sh '''
+                    echo "=== Simulating a Build Failure ==="
+                    echo "ERROR: Unit test failed on assertion line 42"
+                    exit 1
+                '''
             }
         }
     }
-
     post {
         failure {
             script {
