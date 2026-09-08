@@ -8,6 +8,9 @@ ENV_FILE_PATH = APP_DIR.parent / ".env"
 class Settings(BaseSettings):
     app_name: str = "Bosch AI RCA agent"
     
+
+    database_url: str = "mysql+pymysql://rca_user:Ayubkhan10@localhost:3306/rca_db" 
+    
     # Local Ollama Settings
     ollama_host: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5-coder:1.5b"

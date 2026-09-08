@@ -1,0 +1,27 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    environment:
+      - NO_PROXY=localhost,127.0.0.1,host.docker.internal,.internal
+      - no_proxy=localhost,127.0.0.1,host.docker.internal,.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - NO_PROXY=localhost,127.0.0.1,host.docker.internal,prometheus
+      - no_proxy=localhost,127.0.0.1,host.docker.internal,prometheus
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+volumes:
+  grafana-storage:

@@ -6,3 +6,6 @@ uvicorn[standard]>=0.28.0
 pydantic>=2.6.0
 sqlmodel>=0.0.16
 mysqlclient>=2.2.0
+SQLAlchemy>=2.0.35,<3.0.0
+PyMySQL>=1.1.1,<2.0.0
+prometheus-fastapi-instrumentator>=7.0.0
