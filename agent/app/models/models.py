@@ -36,3 +36,14 @@ class JenkinsWebhookPayload(BaseModel):
     log_url: str = Field(description="URL of the console log of the build")
     git_author_email: Optional[str] = None 
     gerrit_change_id: Optional[str] = None
+
+
+class FeedbackRequest(BaseModel):
+    build_id: str
+    job_name: str
+    rating: str  # "UP" or "DOWN"
+    predicted_failure_type: Optional[str] = None
+    corrected_failure_type: Optional[str] = None
+    user_comments: Optional[str] = None
+    raw_log_snippet: Optional[str] = None
+    user_email: Optional[str] = None  # Add this line
