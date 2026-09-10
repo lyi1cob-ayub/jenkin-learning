@@ -1,8 +1,11 @@
-global:
-  scrape_interval: 2s
+  global:
+    scrape_interval: 15s
 
-scrape_configs:
-  - job_name: "fastapi-rca-agent"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["host.docker.internal:8000"]
+  scrape_configs:
+    - job_name: "prometheus"
+      static_configs:
+        - targets: ["localhost:9090"]
+    - job_name: "fastapi-rca-agent"
+      metrics_path: "/metrics"
+      static_configs:
+        - targets: ["10.244.10.234:8000"]

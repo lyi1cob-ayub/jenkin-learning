@@ -49,10 +49,17 @@ services:
   # 3. Grafana Monitoring Dashboards
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana_service
+    container_name: rca_grafana
     restart: always
     ports:
       - "3000:3000"
+    environment:
+      - HTTP_PROXY=http://10.47.203.33:3128
+      - HTTPS_PROXY=http://10.47.203.33:3128
+      - http_proxy=http://10.47.203.33:3128
+      - https_proxy=http://10.47.203.33:3128
+      - NO_PROXY=localhost,127.0.0.1,prometheus_service,prometheus,10.244.9.208
+      - no_proxy=localhost,127.0.0.1,prometheus_service,prometheus,10.244.9.208
     volumes:
       - grafana_storage:/var/lib/grafana
 
@@ -63,9 +70,17 @@ services:
     restart: always
     ports:
       - "9090:9090"
+    environment:
+      - HTTP_PROXY=http://10.47.203.33:3128
+      - HTTPS_PROXY=http://10.47.203.33:3128
+      - http_proxy=http://10.47.203.33:3128
+      - https_proxy=http://10.47.203.33:3128
+      - NO_PROXY=localhost,127.0.0.1,host.docker.internal,10.244.9.208,10.244.10.234,172.17.0.1
+      - no_proxy=localhost,127.0.0.1,host.docker.internal,10.244.9.208,10.244.10.234,172.17.0.1
     volumes:
-      - prometheus_storage:/etc/prometheus
-
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   # 5. MySQL Database
   mysql:
     image: mysql:8.0
@@ -78,6 +93,38 @@ services:
       MYSQL_DATABASE: app_db
     volumes:
       - mysql_storage:/var/lib/mysql
+  langfuse_db:
+    image: postgres:16-alpine
+    container_name: langfuse_db
+    restart: always
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse_db_password
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse_db_storage:/var/lib/postgresql/data
+
+  # Langfuse Analytics & Web Dashboard
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: langfuse_service
+    restart: always
+    depends_on:
+      - langfuse_db
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://langfuse:langfuse_db_password@langfuse_db:5432/langfuse
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=secret_key_for_langfuse_auth_change_me
+      - SALT=random_salt_string_change_me
+      - TELEMETRY_ENABLED=false
+      - HTTP_PROXY=http://10.47.203.33:3128
+      - HTTPS_PROXY=http://10.47.203.33:3128
+      - http_proxy=http://10.47.203.33:3128
+      - https_proxy=http://10.47.203.33:3128
+      - NO_PROXY=localhost,127.0.0.1,langfuse_db,ollama_service,10.244.9.203,10.244.9.207,10.244.9.208
+      - no_proxy=localhost,127.0.0.1,langfuse_db,ollama_service,10.244.9.203,10.244.9.207,10.244.9.208
 
 # Persistent storage volumes
 volumes:
@@ -86,3 +133,4 @@ volumes:
   grafana_storage:
   prometheus_storage:
   mysql_storage:
+  langfuse_db_storage:

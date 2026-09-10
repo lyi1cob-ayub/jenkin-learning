@@ -30,9 +30,17 @@ class Settings(BaseSettings):
     jenkins_token: str = ""
     jenkins_user: str = ""
     teams_webhook_url: str = ""
+
     LOG_PARSER_MAX_CONTEXT_LINES: int = 40
     LOG_PARSER_MAX_TOTAL_CHARS: int = 24000
     LOG_PARSER_MAX_LINE_LENGTH: int = 2000
+
+    # Langfuse Observability Settings
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_host: str = "http://10.244.9.207:3001"
+
+    
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE_PATH,

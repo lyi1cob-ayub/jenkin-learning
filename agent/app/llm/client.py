@@ -8,10 +8,20 @@ from pathlib import Path
 from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
+
 from app.config import settings
 from app.models.models import RCAOutput
 
-
+from langfuse import Langfuse
+try:
+    from langfuse.decorators import langfuse_context, observe
+except ImportError:
+    # Legacy fallback for older SDK structures
+    from langfuse import observe
+    try:
+        from langfuse import langfuse_context
+    except ImportError:
+        langfuse_context = None
 class OllamaRCAClient:
     """Client for interacting with local Ollama or OpenRouter via HTTP requests with automated fallback."""
 
@@ -26,6 +36,16 @@ class OllamaRCAClient:
         )
         self.openrouter_api_key = settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY", "")
         self.openrouter_url = "https://openrouter.ai/api/v1/chat/completions"
+        if settings.langfuse_public_key and settings.langfuse_secret_key:
+            self.langfuse = Langfuse(
+                public_key=settings.langfuse_public_key,
+                secret_key=settings.langfuse_secret_key,
+                host=settings.langfuse_host
+            )
+            logger.info(f"Initialized Langfuse client pointing to {settings.langfuse_host}")
+        else:
+            self.langfuse = None
+            logger.warning("Langfuse credentials not set. Tracing running in passive mode.")
 
     def _load_prompt_registry(self, filepath: str) -> dict:
         path = Path(filepath)
@@ -48,7 +68,7 @@ class OllamaRCAClient:
         
         logger.info(f"Successfully activated prompt version: {version}")
         return prompts_dict[version]
-
+    @observe(name="RCA_Analysis_Root")
     def analyze_failure(self, error_snippet: str, file_context: str = "Not provided") -> dict:
         system_prompt = self.prompt_config.get("system_prompt", "")
         user_template = self.prompt_config.get("user_prompt_template", "")
@@ -83,7 +103,7 @@ class OllamaRCAClient:
             response.raise_for_status()
             
         return response
-
+    @observe(as_type="generation", name="OpenRouter_Generation")
     def _call_openrouter(self, messages: list) -> dict:
         api_key = self.openrouter_api_key or settings.openrouter_api_key
         model = settings.openrouter_model
@@ -111,13 +131,23 @@ class OllamaRCAClient:
             response.raise_for_status()
             result_json = response.json()
             content_str = result_json["choices"][0]["message"]["content"].strip()
+            if langfuse_context is not None:
+                langfuse_context.update_current_observation(
+                    model=model,
+                    input=messages,
+                    output=content_str,
+                    usage={
+                        "input": result_json.get("usage", {}).get("prompt_tokens", 0),
+                        "output": result_json.get("usage", {}).get("completion_tokens", 0),
+                    },
+                )
             return self._parse_and_validate(content_str)
             
         except Exception as e:
             logger.error(f"OpenRouter request failed after retries: {str(e)}. Falling back to local Ollama.")
             # Fallback path to local instance prevents pipeline termination
             return self._call_ollama(messages)
-
+    @observe(as_type="generation", name="Ollama_Generation")
     def _call_ollama(self, messages: list) -> dict:
         chat_url = f"{self.base_url}/api/chat"
         model = settings.ollama_model
@@ -137,11 +167,23 @@ class OllamaRCAClient:
         logger.info(f"Sending RCA request using prompt [{settings.active_prompt_version}] to Ollama [{model}]")
 
         try:
-            response = requests.post(chat_url, json=payload, timeout=(5.0, 60.0))
-            response.raise_for_status()
-            result_json = response.json()
-            content_str = result_json.get("message", {}).get("content", "{}").strip()
-            return self._parse_and_validate(content_str)
+            with requests.Session() as session:
+                session.trust_env = False
+                response = requests.post(chat_url, json=payload, timeout=(10.0, 180.0))
+                response.raise_for_status()
+                result_json = response.json()
+                content_str = result_json.get("message", {}).get("content", "{}").strip()
+                if langfuse_context is not None:
+                    langfuse_context.update_current_observation(
+                        model=model,
+                        input=messages,
+                        output=content_str,
+                        usage={
+                            "input": result_json.get("prompt_eval_count", 0),
+                            "output": result_json.get("eval_count", 0),
+                        },
+                    )
+                return self._parse_and_validate(content_str)
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to communicate with Ollama server via HTTP: {str(e)}")
             return self._build_fallback_schema(

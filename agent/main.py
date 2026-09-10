@@ -6,6 +6,19 @@ from app.db.db import init_db
 from contextlib import asynccontextmanager
 from loguru import logger
 from prometheus_fastapi_instrumentator import Instrumentator
+try:
+    from langfuse.decorators import langfuse_context
+except ImportError:
+    try:
+        from langfuse import langfuse_context
+    except ImportError:
+        langfuse_context = None
+
+instrumentator = Instrumentator(
+    should_group_status_codes=False,
+    should_ignore_untemplated=True,
+    
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,6 +31,12 @@ async def lifespan(app: FastAPI):
     
     yield
     
+    if langfuse_context is not None and hasattr(langfuse_context, "flush"):
+        try:
+            logger.info("Flushing pending Langfuse traces...")
+            langfuse_context.flush()
+        except Exception as e:
+            logger.warning(f"Skipped Langfuse flush during shutdown: {e}")
     # Clean up operations during application shutdown (if needed)
     logger.info("Shutting down application...")
 
@@ -38,7 +57,7 @@ def health_checker():
         "status":"healthy"
     }
 # 2. Instrument and expose AFTER all routers are included
-Instrumentator(should_group_status_codes=False).instrument(app).expose(app)
+instrumentator.instrument(app).expose(app)
 
 
 
