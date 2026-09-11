@@ -29,7 +29,17 @@ class RCAOutput(BaseModel):
             elif "code" in val_lower or "app" in val_lower:
                 return ErrorDomain.APPLICATION_CODE.value
         return value
-
+        
+    @field_validator("evidence", "affected_component", "root_cause", "recommended_fix", mode="before")
+    @classmethod
+    def coerce_list_to_string(cls, value):
+        """Handles small-model literalism: qwen3 sometimes returns a list of log
+        lines for 'evidence' instead of a single string. Join defensively rather
+        than failing the whole response over a shape mismatch."""
+        if isinstance(value, list):
+            return "\n".join(str(item) for item in value)
+        return value
+        
 class JenkinsWebhookPayload(BaseModel):
     build_id: str = Field(description="Jenkins build number")
     job_name: str = Field(description="Jenkins job name")

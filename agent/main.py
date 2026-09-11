@@ -9,10 +9,8 @@ from prometheus_fastapi_instrumentator import Instrumentator
 try:
     from langfuse.decorators import langfuse_context
 except ImportError:
-    try:
-        from langfuse import langfuse_context
-    except ImportError:
-        langfuse_context = None
+    langfuse_context = None
+
 
 instrumentator = Instrumentator(
     should_group_status_codes=False,
@@ -37,7 +35,6 @@ async def lifespan(app: FastAPI):
             langfuse_context.flush()
         except Exception as e:
             logger.warning(f"Skipped Langfuse flush during shutdown: {e}")
-    # Clean up operations during application shutdown (if needed)
     logger.info("Shutting down application...")
 
 app = FastAPI(
