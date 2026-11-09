@@ -1,76 +1,64 @@
-# Technology Stack and License
+# Technology Stack and Licenses
 
-This document describes the technologies present in the Jenkins RCA Agent repository and why they are used. It reflects the repository configuration inspected for this project; some versions and model choices are configurable and may differ between the code defaults and `env.example`.
+A simple inventory of the technologies configured in this Jenkins RCA Agent project, their purpose, declared versions, and license status.
 
-## Application stack
+> **Version note:** Python dependency versions below are the constraints in `requirements.txt`, not necessarily the exact installed versions. Several Docker images use floating tags such as `latest` or `lts`. Pin versions and check the license shipped with the exact artifact before a production or distribution release.
 
-| Technology | Where it is used | Why it is used |
-|---|---|---|
-| Python | Agent application | Implements the API, log processing, workflow, database access, and integrations. |
-| FastAPI | `main.py`, API routes | Provides the HTTP API for Jenkins webhooks, feedback, and health checks, with typed request handling. |
-| Uvicorn | API startup | Runs the FastAPI ASGI application. |
-| Pydantic / Pydantic Settings | Models and configuration | Validates structured RCA data and loads application settings from environment variables and `.env`. |
-| LangGraph | `app/graph/` | Orchestrates the parse → classify → notify workflow and passes shared state between its steps. |
-| LangChain Community and LangChain Ollama | Requirements and LLM/tool integration | Supplies LangChain integrations used by the agent, including the Ollama connection/tool ecosystem. |
-| SQLAlchemy and SQLModel | Database layer | Defines and accesses database records through Python ORM abstractions. |
-| MySQL 8.0 | Compose database service | Stores RCA analyses and developer feedback. The app connects through MySQL drivers. |
-| PyMySQL and mysqlclient | Database drivers | Provide MySQL connectivity for SQLAlchemy. |
-| `aiofiles` | Log ingestion | Supports asynchronous file operations while saving downloaded Jenkins logs. |
-| Loguru | Application logging | Provides application-level logs for workflow stages and integrations. |
-| Requests | LLM and HTTP integrations | Sends HTTP requests to configured LLM providers and external services. |
-| PyYAML | Prompt configuration | Reads the local YAML prompt registry. |
-| Tenacity | OpenRouter client | Retries selected transient provider errors with backoff. |
+## Application and Python dependencies
 
-## AI and workflow services
+| Technology | Version declared in this repository | What it is used for | License / status |
+|---|---|---|---|
+| Python | Not pinned | Implements the API, workflow, parser, database access, and integrations. | Open-source; Python Software Foundation License. |
+| FastAPI | `>=0.110.0` | HTTP endpoints for Jenkins webhooks, feedback, and health checks. | Open source — MIT. |
+| Uvicorn | `>=0.28.0` (`standard` extras) | Runs the FastAPI ASGI application. | Open source — BSD-3-Clause. |
+| Pydantic | `>=2.6.0` | Validates request data, settings, and structured RCA responses. | Open source — MIT. |
+| Pydantic Settings | Not explicitly listed | Loads configuration from environment variables and `.env` files. | Open source — MIT; version is not pinned/listed. |
+| LangGraph | `==1.0.5` | Orchestrates the parse → classify → notify workflow. | Open source — MIT for the Python library. This does not cover separately licensed hosting or commercial products. |
+| LangChain Community | `==0.4.1` | Provides community integrations used by the agent. | Open source — MIT. |
+| LangChain Ollama | `>=0.2.0` | Connects LangChain components to Ollama. | Open source — MIT. |
+| SQLAlchemy | `>=2.0.35,<3.0.0` | ORM and database connection layer. | Open source — MIT. |
+| SQLModel | `>=0.0.16` | Defines database models using Pydantic and SQLAlchemy. | Open source — MIT. |
+| mysqlclient | `>=2.2.0` | MySQL database driver. | Open source; GPL-2.0 license terms. Review its distribution/license metadata for the exact version before redistribution. |
+| PyMySQL | `>=1.1.1,<2.0.0` | Pure-Python MySQL driver option. | Open source — MIT. |
+| `aiofiles` | `>=24.1.0` | Asynchronous file operations while saving Jenkins logs. | Open source — Apache-2.0. |
+| Loguru | `>=0.7.2` | Application logging. | Open source — MIT. |
+| `prometheus-fastapi-instrumentator` | `>=7.0.0` | Adds HTTP metrics and exposes them at `/metrics`. | Open source — MIT. |
+| Langfuse Python SDK | `<3.0.0` | Sends LLM tracing/observability data to Langfuse. | Open-source SDK; check the license for the exact resolved package version. |
+| Requests | Not explicitly listed | Makes HTTP requests to external services/providers. | Open source — Apache-2.0; version is not pinned/listed. |
+| PyYAML | Not explicitly listed | Reads the local YAML prompt configuration. | Open source — MIT; version is not pinned/listed. |
+| Tenacity | Not explicitly listed | Retries selected transient provider errors. | Open source — Apache-2.0; version is not pinned/listed. |
 
-| Technology | Configured use | Why it is used |
-|---|---|---|
-| Ollama | Local inference; example model `qwen3:14b` in `env.example` | Runs a model locally, allowing the project to use a private/local inference path. The model name is configurable; code defaults may differ from the example environment file. |
-| OpenRouter | Optional external inference; example model `qwen/qwen-2.5-coder-32b-instruct` | Provides an optional hosted model route and fallback flexibility when enabled. It is disabled by default in `env.example`. |
-| Local YAML prompts | `app/prompts/prompts.yaml` | Keeps prompt text and versions configurable outside the workflow code. |
-| Langfuse | Langfuse 2 Compose service and Python integration | Provides LLM prompt management and tracing/observability for analysis and generation. |
+## Services, models, and integrations
 
-The repository also uses `RCAOutput` validation to ensure model responses match the expected structured fields before they are persisted or sent to notification integrations.
+| Technology | Version/tag configured | What it is used for | License / status |
+|---|---|---|---|
+| Ollama | Docker tag `latest`; example model `qwen3:14b` | Runs the language model locally. | Ollama software is open source — MIT. The model has its own separate license/terms; verify the exact model version before use. |
+| OpenRouter | Optional; example model `qwen/qwen-2.5-coder-32b-instruct` | Optional hosted model API when enabled. | Hosted commercial service, not an open-source software dependency. Provider and model terms apply; usage may incur fees. |
+| Jenkins | Docker tag `lts` | Runs CI pipelines and sends failed-build information to the RCA API. | Open source — MIT for Jenkins core. Plugins can have different licenses. |
+| Microsoft Power Automate | Configured webhook | Routes RCA notifications to collaboration tools. | Proprietary hosted service; Microsoft terms/subscription apply. |
+| Microsoft Teams | No version configured | Delivers failure summaries and remediation guidance. | Proprietary service; Microsoft terms/subscription apply. |
+| Email | Configured through the automation flow | Delivers notifications to developers. | Depends on the email service/provider; no specific implementation is pinned here. |
 
-## CI/CD, API integrations, and notifications
+## Database, monitoring, and deployment
 
-| Technology | Where it is used | Why it is used |
-|---|---|---|
-| Jenkins | Jenkins LTS service, `agent/Jenkinsfile` | Runs build pipelines and triggers the RCA webhook when a build fails. The current pipeline includes an infrastructure-failure simulation. |
-| Jenkins console log endpoint | Webhook flow | Supplies the build log that the agent parses for likely failure evidence. |
-| Microsoft Power Automate | Configured webhook integration | Receives a flat RCA payload and can route notifications through an existing automation flow. |
-| Microsoft Teams and email | Downstream notification destinations | Delivers failure summaries and remediation guidance to developers. These are reached through the Power Automate integration. |
+| Technology | Version/tag configured | What it is used for | License / status |
+|---|---|---|---|
+| MySQL | Docker tag `8.0` | Stores RCA analyses and developer feedback. | Open-source Community Server is GPL-2.0 with the MySQL FOSS License Exception; commercial licensing is also available. Check the exact image distribution. |
+| PostgreSQL | Docker tag `16-alpine` | Stores Langfuse application data. | Open source — PostgreSQL License (permissive BSD-style license). |
+| Langfuse | Docker tag `2` | Provides the prompt/trace UI and LLM observability service. | Check the license for the exact Langfuse 2 release and included features before deployment or redistribution. |
+| Prometheus | Docker tag `latest` | Scrapes and stores application metrics. | Open source — Apache-2.0. |
+| Grafana | Docker tag `latest` | Displays metrics dashboards. | Grafana OSS is open source — AGPL-3.0. Confirm the exact image/edition; Grafana Enterprise features have separate terms. |
+| Docker Compose | Compose file format `3.8` | Starts the supporting development services together. The agent itself is currently started separately. | Compose is an open-source tool; the format version is not the Docker Compose software version. Docker Desktop may have separate licensing terms. |
 
-## Monitoring, deployment, and persistence
+## Project license
 
-| Technology | Where it is used | Why it is used |
-|---|---|---|
-| Docker Compose | `agent/docker-compose.yaml` | Starts the supporting development services together. The FastAPI agent is currently run separately rather than defined as a Compose service. |
-| Prometheus | Metrics service and `prometheus.yml` | Scrapes the agent's `/metrics` endpoint for operational metrics. |
-| `prometheus-fastapi-instrumentator` | FastAPI application | Instruments API requests and exposes Prometheus-format metrics. |
-| Grafana | Compose service | Provides dashboards for metrics collected by Prometheus. |
-| PostgreSQL 16 | `langfuse_db` Compose service | Stores Langfuse's own application data; it is separate from the MySQL database used by the RCA agent. |
-| Environment variables / `.env` | `app/config.py`, `env.example` | Keeps connection details, model selection, credentials, and limits configurable rather than hard-coding normal deployment configuration. Do not commit real secrets. |
+No repository-level `LICENSE` file was identified when this inventory was prepared. Therefore, this project does **not** currently declare a license for its own code. Do not assume that it is open source or grant permission to reuse, modify, or distribute it. Add a repository `LICENSE` file if you want to publish the project under a specific license.
 
-## High-level flow
+Third-party software, Docker images, hosted services, and AI models each have separate license or service terms. This document is a practical inventory, not legal advice. Verify the license metadata and notices for the exact versions and artifacts you deploy, especially where a dependency version is only a range or a Docker tag floats.
 
-1. Jenkins posts failed-build metadata and a console-log URL to the FastAPI service.
-2. The agent downloads and stores the log, then schedules the LangGraph workflow.
-3. The parser extracts bounded error context; the configured LLM produces a structured RCA.
-4. The result and any developer feedback are stored in MySQL.
-5. A notification payload is sent to Power Automate for Teams/email delivery.
-6. Prometheus scrapes API metrics; Langfuse records LLM traces when configured.
+## Version and dependency gaps
 
-## License status
-
-**No repository-level `LICENSE` file was present in the repository tree inspected for this document. The project therefore does not currently declare an open-source license.** Do not assume that the repository is MIT, Apache-2.0, or otherwise freely reusable. Choose a license that matches the owner's intent and add the appropriate `LICENSE` file before distributing the project under an open-source license. If no license is granted, normal copyright restrictions apply; this is not legal advice.
-
-This repository's files do not establish the licenses for its third-party packages, Docker images, Jenkins, LLM models, or hosted services. Their terms are separate and may vary by version, model, and provider. Review upstream license notices and service/model terms before redistribution or production use. The project currently does not include a generated third-party license inventory or SBOM.
-
-## Dependency inventory note
-
-`agent/requirements.txt` lists the main Python dependencies, but code also imports packages such as `requests`, `PyYAML` (`yaml`), `tenacity`, and `pydantic-settings` that are not explicitly listed there in the inspected version. They may currently arrive transitively in a particular environment, but should be declared directly and pinned/locked as appropriate to make installations reproducible and license review complete.
-
-## Configuration and version caveat
-
-Versions and model names are not uniformly pinned across the stack: for example, the Compose file uses tags such as `latest`, and the Ollama model shown in `env.example` differs from the code default. Record the deployed image digests, package lock versions, and model/provider versions for a reproducible release and a reliable license/security inventory.
+- `requirements.txt` pins only LangGraph and LangChain Community exactly; many other packages use minimum-version ranges, and some imported packages are not declared there.
+- `ollama/ollama:latest`, `grafana/grafana:latest`, `prom/prometheus:latest`, and `jenkins/jenkins:lts` can resolve to different image versions over time.
+- The model name in `env.example` is an example/configuration value, not a locked model artifact. Model license and use conditions must be checked separately.
+- Use a lock file and pinned container image digests for reproducible installs and deployments. Keep a generated software bill of materials (SBOM) and verify licenses during releases.
