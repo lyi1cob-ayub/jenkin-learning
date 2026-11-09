@@ -135,7 +135,7 @@ Versions below are copied from repository configuration. A version range is not 
 
 | Technology | Declared version | What it is used for | License / status |
 |---|---|---|---|
-| Python | Not pinned | Implements the API, workflow, parsing, persistence, and integrations. | Open source; Python Software Foundation License. |
+| Python | latest | Implements the API, workflow, parsing, persistence, and integrations. | Open source; Python Software Foundation License. |
 | FastAPI | `>=0.110.0` | Web API and typed endpoints. | Open source — MIT. |
 | Uvicorn | `>=0.28.0` (`standard` extra) | ASGI server for FastAPI. | Open source — BSD-3-Clause. |
 | Pydantic | `>=2.6.0` | Validates requests, settings, and RCA output. | Open source — MIT. |
