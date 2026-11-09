@@ -177,19 +177,6 @@ Versions below are copied from repository configuration. A version range is not 
 | Grafana | Image tag `latest` | Metrics dashboards. | Grafana OSS — AGPL-3.0; verify image edition and terms. |
 | Docker Compose | File format `3.8` | Starts the supporting services. | Compose is an open-source tool; `3.8` is a file-format version, not the Compose application version. Docker Desktop may have separate terms. |
 
-### Project license
-
-No repository-level `LICENSE` file was identified when this document was prepared. The project therefore does **not** currently declare an open-source license for its own code. Do not assume permission to reuse, modify, or redistribute it. Add a repository `LICENSE` file if you want to grant those permissions.
-
-Third-party packages, container images, hosted services, and AI models have their own licenses or service terms. This inventory is not legal advice. Verify exact artifact licenses and retain required notices before distributing or deploying the system.
-
-### Version and dependency gaps
-
-- Only LangGraph and LangChain Community are pinned to exact versions in `requirements.txt`; many dependencies use ranges.
-- Some imported packages (including Requests, PyYAML, Tenacity, and Pydantic Settings) are not explicitly listed in `requirements.txt`.
-- Floating Docker tags (including `latest` and `lts`) are not reproducible pins.
-- Model names are examples/configuration values, not locked model artifacts.
-- Use a dependency lock file, immutable image digests, and an SBOM for reproducible and auditable releases.
 
 ## 7. Deployment and operations
 
@@ -230,33 +217,7 @@ curl http://localhost:8000/metrics
 
 Expected health response: `{"status":"healthy"}`.
 
-## 8. Security, privacy, and resilience
 
-Current safeguards include configuration-driven Jenkins credentials, Pydantic validation, bounded parser input, structured RCA validation, and database-session cleanup. Key risks and recommended improvements:
-
-1. Add authenticated/signed webhook requests and replay protection.
-2. Restrict caller-provided `log_url` to trusted Jenkins hosts, schemes, ports, and redirect destinations to reduce SSRF risk.
-3. Redact sensitive values before storing logs or sending them to any external model provider; establish retention/deletion controls.
-4. Move credentials and environment-specific addresses to secret management; remove development secrets from deployment files.
-5. Replace in-process background tasks with a durable queue and worker for production.
-6. Add notification retries, idempotency, and a dead-letter mechanism.
-7. Separate liveness from dependency-aware readiness checks.
-8. Add database migrations and enforce feedback uniqueness/allowed values at the database layer.
-9. Record prompt/model versions and evaluate changes before promotion.
-10. Pin dependencies/images, scan them, and produce an SBOM.
-
-## 9. Testing and observability
-
-The repository includes `agent/app/test_app.py`, which exercises a chained exception scenario. The Jenkinsfile includes an infrastructure-failure simulation. Recommended coverage includes webhook validation/authentication, log-download failures, parser boundaries and fallbacks, model response parsing and provider fallback, persistence/feedback de-duplication, notification failures/retries, and an end-to-end flow with external services mocked.
-
-Operational signals currently include:
-
-- Loguru application logs.
-- FastAPI request metrics at `/metrics`, scraped by Prometheus and visualized in Grafana.
-- Langfuse traces when configured.
-- Analysis and feedback records in MySQL.
-
-Useful dashboards include webhook volume, completion latency, parser/model fallback rates, RCA confidence, notification success, and feedback ratings.
 
 ## 10. Repository map
 
